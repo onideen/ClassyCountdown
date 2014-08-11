@@ -14,7 +14,7 @@
             this.format;
             this.color;
             // Formated yyyy:MM:dd:hh:mm:ss
-            this.countdownTime;
+            this.countdownDate;
             this.backgroundColor;
             this.rounded;
             this.spacing;
@@ -53,7 +53,7 @@
                 this.type = typeof conf.type !== 'undefined' ? conf.type : 'time';
                 this.format = typeof conf.format !== 'undefined' ? conf.format : 'hh:mm';
                 this.color = typeof conf.color !== 'undefined' ? conf.color : "#FFF";
-                this.countdownTime = conf.countdownTime;
+                this.countdownDate = conf.countdownDate;
                 this.backgroundColor = typeof conf.backgroundColor !== 'undefined' ? conf.backgroundColor : "#000";
                 this.rounded = typeof conf.rounded !== 'undefined' ? conf.rounded : 1;
                 this.spacing = typeof conf.spacing !== 'undefined' ? conf.spacing : 1;
@@ -70,7 +70,6 @@
                     for (var i = 0; i < n_t.length; i++) {
                         n_t[i] = parseInt(n_t[i], 10);
                     }
-                    n_t[0] = new Date().getFullYear() + 1;
                     return n_t;
                 }
                 function updateTime() {
@@ -90,13 +89,13 @@
 
                 if (this.type === "countdown") {
                     var n_t;
-                    if (this.countdownTime === 'undefined') {
+                    if (this.countdownDate === 'undefined') {
                         n_t = mtimer(start.getFullYear() + 1 + ":1:1:0:0:00");
                     } else {
-                        n_t = mtimer(this.countdownTime);
+                        n_t = mtimer(this.countdownDate);
                     }
 
-                    this.new_date = new Date(n_t[0], n_t[1] - 1, n_t[2], n_t[3], n_t[4], n_t[5]);
+                    this.new_date = new Date(n_t[0], n_t[1] - 1, n_t[2], n_t[3], n_t[4]);
                     for (var i = 0; i < 12 * 6; i++) {
                         this.dig[i] = [];
                         for (var y = 0; y < 7; y++) {
