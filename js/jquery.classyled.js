@@ -24,7 +24,8 @@
             this.new_date;
             this.flash = true;
             this.dig = [];
-            this.font1 = [" 000    0    000   000     0  00000   00  00000  000   000             ",
+            this.font1 = [
+                " 000    0    000   000     0  00000   00  00000  000   000             ",
                 "0   0  00   0   0 0   0   00  0      0        0 0   0 0   0            ",
                 "0   0   0       0     0  0 0  0     0         0 0   0 0   0   0        ",
                 "0   0   0    000   000  0  0  0000  0000     0   000   0000            ",
@@ -32,7 +33,8 @@
                 "0   0   0   0     0   0    0  0   0 0   0  0    0   0    0    0        ",
                 " 000   000  00000  000     0   000   000  0      000   00              "
             ];
-            this.font2 = [" 000    0    000  00000    0  00000   00  00000  000   000             ",
+            this.font2 = [
+                " 000    0    000  00000    0  00000   00  00000  000   000             ",
                 "0   0  00   0   0    0    00  0      0        0 0   0 0   0            ",
                 "0  00   0       0   0    0 0  0000  0        0  0   0 0   0   0        ",
                 "0 0 0   0     00     0  0  0      0 0000    0    000   0000            ",
@@ -40,7 +42,8 @@
                 "0   0   0   0     0   0    0  0   0 0   0   0   0   0    0    0        ",
                 " 000   000  00000  000     0   000   000    0    000   00              "
             ];
-            this.font3 = ["00000     0 00000 00000 0   0 00000 00000 00000 00000 00000            ",
+            this.font3 = [
+                "00000     0 00000 00000 0   0 00000 00000 00000 00000 00000            ",
                 "0   0     0     0     0 0   0 0     0         0 0   0 0   0   0        ",
                 "0   0     0     0     0 0   0 0     0         0 0   0 0   0            ",
                 "0   0     0 00000 00000 00000 00000 00000     0 00000 00000            ",
@@ -75,10 +78,10 @@
                 function updateTime() {
                     var d = new Date();
                     if (self.type === "countdown") {
-                        self.updateDayLed(d);
+                        self.updateCountdownLed(d);
                     }
                     if (self.type === "time") {
-                        self.updateHourLed(d);
+                        self.updateClockLed(d);
                     }
                     else {
                         setTimeout(updateTime, 1000);
@@ -120,7 +123,7 @@
                     updateTime();
                 }
             };
-            this.updateDayLed = function(d) {
+            this.updateCountdownLed = function(d) {
                 var time_remaining = parseInt((this.new_date.getTime() - d.getTime()) / 1000) + 1;
                 var days = parseInt(time_remaining / 86400);
                 var hours = parseInt((time_remaining - days * 86400) / 3600);
@@ -134,7 +137,7 @@
                     this._tick("000:00:00:00");
                 }
             };
-            this.updateHourLed = function(d) {
+            this.updateClockLed = function(d) {
                 var num;
                 var hours = parseInt(d.getHours());
                 hours = (this.hourFormat === 12 ? (hours > 12 ? hours - 12 : hours) : hours);
