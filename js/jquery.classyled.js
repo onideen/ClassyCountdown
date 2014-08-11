@@ -8,11 +8,13 @@
  *
  */
 (function($) {
-    $.fn.ClassyLED = function(settings) {
-        var ClassyLED = function(element, settings) {
+    $.fn.ClassyCountdown = function(settings) {
+        var ClassyCountdown = function(element, settings) {
             this.type;
             this.format;
             this.color;
+            // Formated yyyy:MM:dd:hh:mm:ss
+            this.countdownTime;
             this.backgroundColor;
             this.rounded;
             this.spacing;
@@ -51,6 +53,7 @@
                 this.type = typeof conf.type !== 'undefined' ? conf.type : 'time';
                 this.format = typeof conf.format !== 'undefined' ? conf.format : 'hh:mm';
                 this.color = typeof conf.color !== 'undefined' ? conf.color : "#FFF";
+                this.countdownTime = conf.countdownTime;
                 this.backgroundColor = typeof conf.backgroundColor !== 'undefined' ? conf.backgroundColor : "#000";
                 this.rounded = typeof conf.rounded !== 'undefined' ? conf.rounded : 1;
                 this.spacing = typeof conf.spacing !== 'undefined' ? conf.spacing : 1;
@@ -58,9 +61,9 @@
                 this.fontType = typeof conf.fontType !== 'undefined' ? conf.fontType : 1;
                 this.led = this['font' + this.fontType];
                 this.size = typeof conf.size !== 'undefined' ? conf.size : 12;
-                var h_w = 12, r, self = this;
+                var ledSize = 12, r, self = this;
                 if (this.size < 30) {
-                    h_w = this.size;
+                    ledSize = this.size;
                 }
                 function mtimer(timer) {
                     var n_t = timer.split(":");
@@ -73,43 +76,31 @@
                 function updateTime() {
                     var d = new Date();
                     if (self.type === "countdown") {
-                        self.updateLed1(d);
+                        self.updateDayLed(d);
                     }
                     if (self.type === "time") {
-                        self.updateLed2(d);
-                    }
-                    if (self.type === "random") {
-                        self.updateLed0();
-                        setTimeout(updateTime, 5000);
+                        self.updateHourLed(d);
                     }
                     else {
                         setTimeout(updateTime, 1000);
                     }
                 }
                 var start = new Date();
-                if (this.type === "random") {
-                    r = Raphael($(element)[0], this.length * 6 * (h_w + this.spacing) - (h_w + 2 * this.spacing), 7 * (h_w + this.spacing) - this.spacing);
-                    for (var i = 0; i < this.length * 6; i++) {
-                        this.dig[i] = [];
-                        for (var y = 0; y < 7; y++) {
-                            this.dig[i][y] = r.rect(i * (h_w + this.spacing), y * (h_w + this.spacing), h_w, h_w, this.rounded).attr({
-                                "fill": this.backgroundColor,
-                                "stroke": null
-                            });
-                        }
-                    }
-                    updateTime();
-                }
-                else {
-                    r = Raphael($(element)[0], this.format.length * 6 * (h_w + this.spacing) - (h_w + 2 * this.spacing), 7 * (h_w + this.spacing) - this.spacing);
-                }
+                r = Raphael($(element)[0], this.format.length * 6 * (ledSize + this.spacing) - (ledSize + 2 * this.spacing), 7 * (ledSize + this.spacing) - this.spacing);
+
                 if (this.type === "countdown") {
-                    var n_t = mtimer(start.getFullYear() + 1 + ":1:1:0:0:00");
-                    this.new_date = new Date(n_t[0], n_t[1] - 1, n_t[2], n_t[3], n_t[4]);
+                    var n_t;
+                    if (this.countdownTime === 'undefined') {
+                        n_t = mtimer(start.getFullYear() + 1 + ":1:1:0:0:00");
+                    } else {
+                        n_t = mtimer(this.countdownTime);
+                    }
+
+                    this.new_date = new Date(n_t[0], n_t[1] - 1, n_t[2], n_t[3], n_t[4], n_t[5]);
                     for (var i = 0; i < 12 * 6; i++) {
                         this.dig[i] = [];
                         for (var y = 0; y < 7; y++) {
-                            this.dig[i][y] = r.rect(i * (h_w + this.spacing), y * (h_w + this.spacing), h_w, h_w, this.rounded).attr({
+                            this.dig[i][y] = r.rect(i * (ledSize + this.spacing), y * (ledSize + this.spacing), ledSize, ledSize, this.rounded).attr({
                                 "fill": this.backgroundColor,
                                 "stroke": null
                             });
@@ -121,7 +112,7 @@
                     for (var i = 0; i < ((this.format === "mm:ss" || this.format === "hh:mm") ? 5 : ((this.format === "hh" || this.format === "mm" || this.format === "ss") ? 2 : 8)) * 6; i++) {
                         this.dig[i] = [];
                         for (var y = 0; y < 7; y++) {
-                            this.dig[i][y] = r.rect(i * (h_w + this.spacing), y * (h_w + this.spacing), h_w, h_w, this.rounded).attr({
+                            this.dig[i][y] = r.rect(i * (ledSize + this.spacing), y * (ledSize + this.spacing), ledSize, ledSize, this.rounded).attr({
                                 "fill": this.backgroundColor,
                                 "stroke": null
                             });
@@ -130,21 +121,13 @@
                     updateTime();
                 }
             };
-            this.updateLed0 = function() {
-                var rand_num = ("0,9999999").split(",");
-                var num = "" + parseInt(parseInt(rand_num[0]) + Math.random() * (parseInt(rand_num[1]) - parseInt(rand_num[0])));
-                while (String(num).length < this.length) {
-                    num = "0" + num;
-                }
-                this._tick(num);
-            };
-            this.updateLed1 = function(d) {
-                var time_rem = parseInt((this.new_date.getTime() - d.getTime()) / 1000) + 1;
-                var m_d = parseInt(time_rem / 86400);
-                var m_h = parseInt((time_rem - m_d * 86400) / 3600);
-                var m_m = parseInt((time_rem - m_d * 86400 - m_h * 3600) / 60);
-                var m_s = parseInt(time_rem - m_d * 86400 - m_h * 3600 - m_m * 60);
-                var num = (m_d < 10 ? "00" : (m_d > 100 ? "" : "0")) + m_d + ":" + (m_h < 10 ? "0" : "") + m_h + ":" + (m_m < 10 ? "0" : "") + m_m + ":" + (m_s < 10 ? "0" : "") + m_s;
+            this.updateDayLed = function(d) {
+                var time_remaining = parseInt((this.new_date.getTime() - d.getTime()) / 1000) + 1;
+                var days = parseInt(time_remaining / 86400);
+                var hours = parseInt((time_remaining - days * 86400) / 3600);
+                var minutes = parseInt((time_remaining - days * 86400 - hours * 3600) / 60);
+                var seconds = parseInt(time_remaining - days * 86400 - hours * 3600 - minutes * 60);
+                var num = (days < 10 ? "00" : (days > 100 ? "" : "0")) + days + ":" + (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
                 if ((this.new_date.getTime() - d.getTime()) >= 0) {
                     this._tick(num);
                 }
@@ -152,35 +135,35 @@
                     this._tick("000:00:00:00");
                 }
             };
-            this.updateLed2 = function(d) {
+            this.updateHourLed = function(d) {
                 var num;
-                var m_h = parseInt(d.getHours());
-                var m_h = (this.hourFormat === 12 ? (m_h > 12 ? m_h - 12 : m_h) : m_h);
-                var m_m = parseInt(d.getMinutes());
-                var m_s = parseInt(d.getSeconds());
+                var hours = parseInt(d.getHours());
+                hours = (this.hourFormat === 12 ? (hours > 12 ? hours - 12 : hours) : hours);
+                var minutes = parseInt(d.getMinutes());
+                var seconds = parseInt(d.getSeconds());
                 if (this.format === "mm:ss") {
-                    num = (m_m < 10 ? "0" : "") + m_m + ":" + (m_s < 10 ? "0" : "") + m_s;
+                    num = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
                 }
                 else if (this.format === "hh:mm") {
                     if (this.flash) {
-                        num = (m_h < 10 ? "0" : "") + m_h + ":" + (m_m < 10 ? "0" : "") + m_m;
+                        num = (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes;
                     }
                     else {
-                        num = (m_h < 10 ? "0" : "") + m_h + " " + (m_m < 10 ? "0" : "") + m_m;
+                        num = (hours < 10 ? "0" : "") + hours + " " + (minutes < 10 ? "0" : "") + minutes;
                     }
                     this.flash = !this.flash;
                 }
                 else if (this.format === "hh") {
-                    num = (m_h < 10 ? "0" : "") + m_h;
+                    num = (hours < 10 ? "0" : "") + hours;
                 }
                 else if (this.format === "mm") {
-                    num = (m_m < 10 ? "0" : "") + m_m;
+                    num = (minutes < 10 ? "0" : "") + minutes;
                 }
                 else if (this.format === "ss") {
-                    num = (m_s < 10 ? "0" : "") + m_s;
+                    num = (seconds < 10 ? "0" : "") + seconds;
                 }
                 else {
-                    num = (m_h < 10 ? "0" : "") + m_h + ":" + (m_m < 10 ? "0" : "") + m_m + ":" + (m_s < 10 ? "0" : "") + m_s;
+                    num = (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
                 }
                 this._tick(num);
             };
@@ -208,7 +191,7 @@
         };
         return this.each(function() {
             settings.id = $(this).attr('id');
-            return new ClassyLED(this, settings);
+            return new ClassyCountdown(this, settings);
         });
     };
 })(jQuery);
