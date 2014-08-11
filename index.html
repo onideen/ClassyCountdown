@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src=
+		"http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+		<script src="js/raphael.js"></script>
+		<script src="js/jquery.classyled.min.js"></script>
+		<link href="http://www.jqueryscript.net/css/jquerysctipttop.css" rel=
+		"stylesheet" type="text/css">
+	</head>
+
+	<body style="background: #1d1e1d">
+		<div class="led autosize"></div><br>
+		<div class="countdown autosize"></div><br>
+		<script>
+			$(document).ready(function() {
+				$('.led').ClassyLED({
+					type: 'time',
+					format: "hh:mm:ss",
+					color: "#0bbf47",
+					backgroundColor: "#353535",
+					size: 22,
+					rounded: 4,
+					length: 4,
+					fontType: 1
+				});
+				
+				$('.countdown').ClassyLED({
+					type: 'countdown',
+					format: "hh:mm:ss",
+					color: "#0bbf47",
+					backgroundColor: "#353535",
+					size: 22,
+					rounded: 4,
+					length: 4,
+					fontType: 1
+				});
+							
+			});
+		</script>
+	</body>
+</html>
